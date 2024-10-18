@@ -1,11 +1,11 @@
-import requests
 from packaging import version
 from packaging.specifiers import SpecifierSet
+from security import safe_requests
 
 
 def get_versions_supporting_python38_or_lower(package_name):
     url = f"https://pypi.org/pypi/{package_name}/json"
-    response = requests.get(url)
+    response = safe_requests.get(url)
     if response.status_code != 200:
         print(f"Failed to fetch data for {package_name}")
         return {}
