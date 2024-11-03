@@ -5,7 +5,7 @@ from packaging.specifiers import SpecifierSet
 
 def get_versions_supporting_python38_or_lower(package_name):
     url = f"https://pypi.org/pypi/{package_name}/json"
-    response = requests.get(url)
+    response = requests.get(url, timeout=60)
     if response.status_code != 200:
         print(f"Failed to fetch data for {package_name}")
         return {}
