@@ -8,11 +8,12 @@ from datetime import datetime
 import requests
 from dotenv import load_dotenv
 from tqdm import tqdm
+from security import safe_requests
 
 
 def has_been_reopened(issue_number):
     timeline_url = f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/issues/{issue_number}/timeline"
-    response = requests.get(timeline_url, headers=headers)
+    response = safe_requests.get(timeline_url, headers=headers)
     response.raise_for_status()
     events = response.json()
     return any(event["event"] == "reopened" for event in events if "event" in event)
@@ -42,7 +43,7 @@ def get_issues(state="open"):
     per_page = 100
 
     # First, get the total count of issues
-    response = requests.get(
+    response = safe_requests.get(
         f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/issues",
         headers=headers,
         params={"state": state, "per_page": 1},
@@ -53,7 +54,7 @@ def get_issues(state="open"):
 
     with tqdm(total=total_pages, desc="Collecting issues", unit="page") as pbar:
         while True:
-            response = requests.get(
+            response = safe_requests.get(
                 f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/issues",
                 headers=headers,
                 params={"state": state, "page": page, "per_page": per_page},
