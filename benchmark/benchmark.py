@@ -29,6 +29,7 @@ from aider import models, sendchat
 from aider.coders import Coder, base_coder
 from aider.dump import dump  # noqa: F401
 from aider.io import InputOutput
+from security import safe_command
 
 BENCHMARK_DNAME = Path(os.environ.get("AIDER_BENCHMARK_DIR", "tmp.benchmarks"))
 
@@ -981,8 +982,7 @@ def run_unit_tests(original_dname, testdir, history_fname, test_files):
 
     print(" ".join(command))
 
-    result = subprocess.run(
-        command,
+    result = safe_command.run(subprocess.run, command,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,

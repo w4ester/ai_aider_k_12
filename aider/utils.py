@@ -9,6 +9,7 @@ import time
 from pathlib import Path
 
 from aider.dump import dump  # noqa: F401
+from security import safe_command
 
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".webp", ".pdf"}
 
@@ -213,8 +214,7 @@ def run_install(cmd):
 
     try:
         output = []
-        process = subprocess.Popen(
-            cmd,
+        process = safe_command.run(subprocess.Popen, cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,

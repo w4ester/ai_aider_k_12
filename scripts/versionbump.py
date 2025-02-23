@@ -8,6 +8,7 @@ import subprocess
 import sys
 
 from packaging import version
+from security import safe_command
 
 
 def main():
@@ -114,8 +115,7 @@ def main():
     for cmd in git_commands:
         print(f"Running: {' '.join(cmd)}")
         if not dry_run:
-            subprocess.run(
-                cmd,
+            safe_command.run(subprocess.run, cmd,
                 check=True,
             )
 
@@ -142,7 +142,7 @@ def main():
     for cmd in git_commands_dev:
         print(f"Running: {' '.join(cmd)}")
         if not dry_run:
-            subprocess.run(cmd, check=True)
+            safe_command.run(subprocess.run, cmd, check=True)
 
     # Remove aider/_version.py if it exists
     version_file = "aider/_version.py"

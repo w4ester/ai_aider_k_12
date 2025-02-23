@@ -15,6 +15,7 @@ import subprocess
 import tempfile
 
 from rich.console import Console
+from security import safe_command
 
 DEFAULT_EDITOR_NIX = "vi"
 DEFAULT_EDITOR_OS_X = "vim"
@@ -130,7 +131,7 @@ def pipe_editor(input_data="", suffix=None, editor=None):
     filepath = write_temp_file(input_data, suffix)
     command_parts = discover_editor(editor)
     command_parts.append(filepath)
-    subprocess.call(command_parts)
+    safe_command.run(subprocess.call, command_parts)
     with open(filepath, "r") as f:
         output_data = f.read()
     try:

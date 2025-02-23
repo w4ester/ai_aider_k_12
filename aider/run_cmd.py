@@ -6,6 +6,7 @@ from io import BytesIO
 
 import pexpect
 import psutil
+from security import safe_command
 
 
 def run_cmd(command, verbose=False, error_print=None, cwd=None):
@@ -59,8 +60,7 @@ def run_cmd_subprocess(command, verbose=False, cwd=None, encoding=sys.stdout.enc
             if platform.system() == "Windows":
                 print("Parent process:", parent_process)
 
-        process = subprocess.Popen(
-            command,
+        process = safe_command.run(subprocess.Popen, command,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
