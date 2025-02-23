@@ -12,6 +12,7 @@ from tree_sitter_languages import get_parser  # noqa: E402
 
 from aider.dump import dump  # noqa: F401
 from aider.run_cmd import run_cmd_subprocess  # noqa: F401
+from security import safe_command
 
 # tree_sitter is throwing a FutureWarning
 warnings.simplefilter("ignore", category=FutureWarning)
@@ -147,8 +148,7 @@ class Linter:
         text = f"## Running: {' '.join(flake8_cmd)}\n\n"
 
         try:
-            result = subprocess.run(
-                flake8_cmd,
+            result = safe_command.run(subprocess.run, flake8_cmd,
                 capture_output=True,
                 text=True,
                 check=False,

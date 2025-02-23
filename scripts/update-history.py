@@ -8,6 +8,7 @@ import tempfile
 from history_prompts import history_prompt
 
 from aider import __version__
+from security import safe_command
 
 
 def get_base_version():
@@ -32,7 +33,7 @@ def run_git_log():
         ":!scripts/",
         ":!HISTORY.md",
     ]
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    result = safe_command.run(subprocess.run, cmd, capture_output=True, text=True)
     return result.stdout
 
 
@@ -82,7 +83,7 @@ def main():
     message = history_prompt.format(aider_line=aider_line)
 
     cmd = ["aider", hist_path, "--read", diff_path, "--msg", message, "--no-auto-commit"]
-    subprocess.run(cmd)
+    safe_command.run(subprocess.run, cmd)
 
     # Read back the updated history
     with open(hist_path, "r") as f:
