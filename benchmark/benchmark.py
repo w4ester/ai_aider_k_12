@@ -2,7 +2,6 @@
 import datetime
 import json
 import os
-import random
 import re
 import shutil
 import subprocess
@@ -29,6 +28,7 @@ from aider import models, sendchat
 from aider.coders import Coder, base_coder
 from aider.dump import dump  # noqa: F401
 from aider.io import InputOutput
+import secrets
 
 BENCHMARK_DNAME = Path(os.environ.get("AIDER_BENCHMARK_DIR", "tmp.benchmarks"))
 
@@ -334,7 +334,7 @@ def main(
         keywords = keywords.split(",")
         test_dnames = [dn for dn in test_dnames for keyword in keywords if keyword in dn]
 
-    random.shuffle(test_dnames)
+    secrets.SystemRandom().shuffle(test_dnames)
     if num_tests > 0:
         test_dnames = test_dnames[:num_tests]
 
