@@ -19,6 +19,7 @@ from aider.dump import dump  # noqa: F401
 from aider.llm import litellm
 from aider.sendchat import ensure_alternating_roles, sanity_check_messages
 from aider.utils import check_pip_install_extra
+from security import safe_requests
 
 RETRY_TIMEOUT = 60
 
@@ -173,10 +174,9 @@ class ModelInfoManager:
 
     def _update_cache(self):
         try:
-            import requests
 
             # Respect the --no-verify-ssl switch
-            response = requests.get(self.MODEL_INFO_URL, timeout=5, verify=self.verify_ssl)
+            response = safe_requests.get(self.MODEL_INFO_URL, timeout=5, verify=self.verify_ssl)
             if response.status_code == 200:
                 self.content = response.json()
                 try:

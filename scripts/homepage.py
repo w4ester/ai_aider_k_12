@@ -12,6 +12,7 @@ import yaml
 from dotenv import load_dotenv
 from google.cloud import bigquery
 from google.oauth2 import service_account
+from security import safe_requests
 
 TOKENS_PER_WEEK = "15B"
 
@@ -173,7 +174,7 @@ def get_total_downloads(
     headers = {"X-API-Key": api_key}
 
     try:
-        response = requests.get(url, headers=headers)
+        response = safe_requests.get(url, headers=headers)
         response.raise_for_status()  # Raise an exception for HTTP errors
 
         data = response.json()
@@ -193,7 +194,7 @@ def get_github_stars(repo="paul-gauthier/aider"):
     headers = {"Accept": "application/vnd.github.v3+json"}
 
     try:
-        response = requests.get(url, headers=headers)
+        response = safe_requests.get(url, headers=headers)
         response.raise_for_status()  # Raise an exception for HTTP errors
 
         data = response.json()

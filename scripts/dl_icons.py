@@ -5,8 +5,7 @@ Download Material Design Icons SVGs used in the README and save to local assets.
 
 import os
 from pathlib import Path
-
-import requests
+from security import safe_requests
 
 # Create the directory if it doesn't exist
 ICONS_DIR = Path("aider/website/assets/icons")
@@ -31,7 +30,7 @@ def download_icon(icon_name):
     url = f"https://cdn.jsdelivr.net/npm/@mdi/svg@latest/svg/{icon_name}.svg"
     print(f"Downloading {url}...")
 
-    response = requests.get(url)
+    response = safe_requests.get(url)
     if response.status_code != 200:
         print(f"Failed to download {icon_name}.svg: {response.status_code}")
         return False
