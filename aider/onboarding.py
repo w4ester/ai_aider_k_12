@@ -13,6 +13,7 @@ import requests
 
 from aider import urls
 from aider.io import InputOutput
+from security import safe_requests
 
 
 def check_openrouter_tier(api_key):
@@ -27,7 +28,7 @@ def check_openrouter_tier(api_key):
         Returns True if the check fails.
     """
     try:
-        response = requests.get(
+        response = safe_requests.get(
             "https://openrouter.ai/api/v1/auth/key",
             headers={"Authorization": f"Bearer {api_key}"},
             timeout=5,  # Add a reasonable timeout

@@ -6,13 +6,14 @@ import sys
 import time
 
 import requests
+from security import safe_requests
 
 
 def get_default_branch(owner, repo):
     """Get the default branch of a GitHub repository using the API."""
     api_url = f"https://api.github.com/repos/{owner}/{repo}"
     try:
-        response = requests.get(api_url)
+        response = safe_requests.get(api_url)
         response.raise_for_status()
         return response.json().get("default_branch")
     except requests.exceptions.RequestException:
@@ -28,7 +29,7 @@ def try_download_tags(owner, repo, branch, directory, output_path):
         tags_url = f"{base_url}/queries/tags.scm"
 
     try:
-        response = requests.get(tags_url)
+        response = safe_requests.get(tags_url)
         response.raise_for_status()
 
         # Save the file
