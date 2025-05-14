@@ -13,7 +13,7 @@ from tqdm import tqdm
 
 def has_been_reopened(issue_number):
     timeline_url = f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/issues/{issue_number}/timeline"
-    response = requests.get(timeline_url, headers=headers)
+    response = requests.get(timeline_url, headers=headers, timeout=60)
     response.raise_for_status()
     events = response.json()
     return any(event["event"] == "reopened" for event in events if "event" in event)
@@ -79,7 +79,7 @@ def get_issues(state="open"):
         f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/issues",
         headers=headers,
         params={"state": state, "per_page": 1},
-    )
+    timeout=60)
     response.raise_for_status()
     total_count = int(response.headers.get("Link", "").split("page=")[-1].split(">")[0])
     total_pages = (total_count + per_page - 1) // per_page
@@ -90,7 +90,7 @@ def get_issues(state="open"):
                 f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/issues",
                 headers=headers,
                 params={"state": state, "page": page, "per_page": per_page},
-            )
+            timeout=60)
             response.raise_for_status()
             page_issues = response.json()
             if not page_issues:
@@ -139,11 +139,11 @@ def comment_and_close_duplicate(issue, oldest_issue):
     comment_body = DUPLICATE_COMMENT.format(oldest_issue_number=oldest_issue["number"])
 
     # Post comment
-    response = requests.post(comment_url, headers=headers, json={"body": comment_body})
+    response = requests.post(comment_url, headers=headers, json={"body": comment_body}, timeout=60)
     response.raise_for_status()
 
     # Close issue
-    response = requests.patch(close_url, headers=headers, json={"state": "closed"})
+    response = requests.patch(close_url, headers=headers, json={"state": "closed"}, timeout=60)
     response.raise_for_status()
 
     print(f"  - Commented and closed issue #{issue['number']}")
@@ -161,7 +161,7 @@ def find_unlabeled_with_paul_comments(issues):
             comments_url = (
                 f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/issues/{issue['number']}/comments"
             )
-            response = requests.get(comments_url, headers=headers)
+            response = requests.get(comments_url, headers=headers, timeout=60)
             response.raise_for_status()
             comments = response.json()
 
@@ -196,7 +196,7 @@ def handle_unlabeled_issues(all_issues, auto_yes):
     print("\nAdding 'question' label to issues...")
     for issue in unlabeled_issues:
         url = f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/issues/{issue['number']}"
-        response = requests.patch(url, headers=headers, json={"labels": ["question"]})
+        response = requests.patch(url, headers=headers, json={"labels": ["question"]}, timeout=60)
         response.raise_for_status()
         print(f"  - Added 'question' label to #{issue['number']}")
 
@@ -235,12 +235,12 @@ def handle_stale_issues(all_issues, auto_yes):
             comment_url = (
                 f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/issues/{issue['number']}/comments"
             )
-            response = requests.post(comment_url, headers=headers, json={"body": STALE_COMMENT})
+            response = requests.post(comment_url, headers=headers, json={"body": STALE_COMMENT}, timeout=60)
             response.raise_for_status()
 
             # Add stale label
             url = f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/issues/{issue['number']}"
-            response = requests.patch(url, headers=headers, json={"labels": ["question", "stale"]})
+            response = requests.patch(url, headers=headers, json={"labels": ["question", "stale"]}, timeout=60)
             response.raise_for_status()
 
             print(f"  Added stale label and comment to #{issue['number']}")
@@ -259,7 +259,7 @@ def handle_stale_closing(all_issues, auto_yes):
         timeline_url = (
             f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/issues/{issue['number']}/timeline"
         )
-        response = requests.get(timeline_url, headers=headers)
+        response = requests.get(timeline_url, headers=headers, timeout=60)
         response.raise_for_status()
         events = response.json()
 
@@ -279,7 +279,7 @@ def handle_stale_closing(all_issues, auto_yes):
         comments_url = (
             f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/issues/{issue['number']}/comments"
         )
-        response = requests.get(comments_url, headers=headers)
+        response = requests.get(comments_url, headers=headers, timeout=60)
         response.raise_for_status()
         comments = response.json()
 
@@ -302,7 +302,7 @@ def handle_stale_closing(all_issues, auto_yes):
 
             # Remove stale label but keep question label
             url = f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/issues/{issue['number']}"
-            response = requests.patch(url, headers=headers, json={"labels": ["question"]})
+            response = requests.patch(url, headers=headers, json={"labels": ["question"]}, timeout=60)
             response.raise_for_status()
             print(f"  Removed stale label from #{issue['number']}")
         else:
@@ -321,13 +321,13 @@ def handle_stale_closing(all_issues, auto_yes):
                 # Add closing comment
                 comment_url = f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/issues/{issue['number']}/comments"  # noqa
                 response = requests.post(
-                    comment_url, headers=headers, json={"body": CLOSE_STALE_COMMENT}
-                )
+                    comment_url, headers=headers, json={"body": CLOSE_STALE_COMMENT}, 
+                timeout=60)
                 response.raise_for_status()
 
                 # Close the issue
                 url = f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/issues/{issue['number']}"
-                response = requests.patch(url, headers=headers, json={"state": "closed"})
+                response = requests.patch(url, headers=headers, json={"state": "closed"}, timeout=60)
                 response.raise_for_status()
                 print(f"  Closed issue #{issue['number']}")
 
@@ -351,7 +351,7 @@ def handle_fixed_issues(all_issues, auto_yes):
         timeline_url = (
             f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/issues/{issue['number']}/timeline"
         )
-        response = requests.get(timeline_url, headers=headers)
+        response = requests.get(timeline_url, headers=headers, timeout=60)
         response.raise_for_status()
         events = response.json()
 
@@ -384,12 +384,12 @@ def handle_fixed_issues(all_issues, auto_yes):
                 f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/issues/{issue['number']}/comments"
             )
             comment = CLOSE_FIXED_ENHANCEMENT_COMMENT if is_enhancement else CLOSE_FIXED_BUG_COMMENT
-            response = requests.post(comment_url, headers=headers, json={"body": comment})
+            response = requests.post(comment_url, headers=headers, json={"body": comment}, timeout=60)
             response.raise_for_status()
 
             # Close the issue
             url = f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/issues/{issue['number']}"
-            response = requests.patch(url, headers=headers, json={"state": "closed"})
+            response = requests.patch(url, headers=headers, json={"state": "closed"}, timeout=60)
             response.raise_for_status()
             print(f"  Closed issue #{issue['number']}")
 

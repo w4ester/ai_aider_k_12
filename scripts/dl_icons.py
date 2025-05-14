@@ -31,7 +31,7 @@ def download_icon(icon_name):
     url = f"https://cdn.jsdelivr.net/npm/@mdi/svg@latest/svg/{icon_name}.svg"
     print(f"Downloading {url}...")
 
-    response = requests.get(url)
+    response = requests.get(url, timeout=60)
     if response.status_code != 200:
         print(f"Failed to download {icon_name}.svg: {response.status_code}")
         return False
