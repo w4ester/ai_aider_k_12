@@ -106,7 +106,7 @@ def generate_audio_openai(text, output_file, voice=VOICE, bitrate=MP3_BITRATE):
     data = {"model": "tts-1", "input": text, "voice": voice}
 
     try:
-        response = requests.post(url, headers=headers, json=data)
+        response = requests.post(url, headers=headers, json=data, timeout=60)
 
         if response.status_code == 200:
             # Use a temporary file for the initial audio

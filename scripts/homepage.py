@@ -173,7 +173,7 @@ def get_total_downloads(
     headers = {"X-API-Key": api_key}
 
     try:
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, timeout=60)
         response.raise_for_status()  # Raise an exception for HTTP errors
 
         data = response.json()
@@ -193,7 +193,7 @@ def get_github_stars(repo="paul-gauthier/aider"):
     headers = {"Accept": "application/vnd.github.v3+json"}
 
     try:
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, timeout=60)
         response.raise_for_status()  # Raise an exception for HTTP errors
 
         data = response.json()
